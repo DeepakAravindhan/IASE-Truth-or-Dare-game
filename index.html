@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truth or Dare - Ultimate Party Edition</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            tamil: ['"Mukta Malar"', 'sans-serif'],
+          },
+          colors: {
+            party: {
+              truth: '#06b6d4',      // Cyan glow
+              truthDark: '#0891b2',
+              dare: '#ec4899',       // Vibrant Pink/Magenta glow
+              dareDark: '#db2777',
+              gold: '#facc15',
+              darkBg: '#0b0f19',
+              cardBg: '#131b2e'
+            }
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 30px -5px rgba(6, 182, 212, 0.65)',
+            'glow-pink': '0 0 30px -5px rgba(236, 72, 153, 0.65)',
+            'glow-pulse': '0 0 50px 10px rgba(168, 85, 247, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at 50% 15%, #231245 0%, #0c0e1a 60%, #05070e 100%);
+      min-height: 100vh;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+
+    /* Glassmorphism utility */
+    .glass-panel {
+      background: rgba(19, 27, 46, 0.7);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-input {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Animated Pulsing Button */
+    @keyframes tapPulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.7);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 35px 12px rgba(236, 72, 153, 0.5);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+      }
+    }
+
+    .tap-animate {
+      animation: tapPulse 2.4s infinite ease-in-out;
+    }
+
+    /* Card Flip & Entrance Keyframes */
+    @keyframes popIn {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .animate-pop {
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Rolling animation for player selector */
+    @keyframes slotRoll {
+      0% { transform: translateY(20px); opacity: 0; filter: blur(4px); }
+      100% { transform: translateY(0); opacity: 1; filter: blur(0); }
+    }
+    .animate-roll {
+      animation: slotRoll 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(168, 85, 247, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(168, 85, 247, 0.65);
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen text-slate-100 selection:bg-pink-500 selection:text-white">
+
+  <!-- Ambient Light Orbs -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-10 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+
+  <!-- Header Navigation -->
+  <header class="w-full max-w-4xl mx-auto px-4 py-5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-pink-500 flex items-center justify-center shadow-lg shadow-pink-500/20">
+        <i class="fa-solid fa-masks-theater text-white text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-cyan-400 via-purple-300 to-pink-500 bg-clip-text text-transparent">
+          TRUTH <span class="text-slate-400 font-normal">or</span> DARE
+        </h1>
+        <p class="text-xs text-slate-400 font-medium">Party Showdown Generator</p>
+      </div>
+    </div>
+
+    <!-- Quick Action Bar -->
+    <div class="flex items-center gap-2">
+      <!-- Language Filter -->
+      <div class="bg-slate-900/90 p-1 rounded-xl border border-slate-700/80 flex items-center text-xs font-bold">
+        <button id="langBothBtn" class="px-2.5 py-1 rounded-lg bg-purple-600 text-white transition">Both</button>
+        <button id="langEnBtn" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">EN</button>
+        <button id="langTaBtn" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition font-tamil">தமிழ்</button>
+      </div>
+
+      <button id="soundToggleBtn" class="p-2.5 rounded-xl glass-panel hover:bg-slate-800 text-slate-300 hover:text-white transition active:scale-95" title="Toggle Sound">
+        <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+      </button>
+      <button id="scoreboardModalBtn" class="px-3.5 py-2 rounded-xl glass-panel hover:bg-slate-800 text-sm font-semibold flex items-center gap-2 text-slate-300 hover:text-yellow-400 transition active:scale-95">
+        <i class="fa-solid fa-trophy text-yellow-400"></i>
+        <span class="hidden sm:inline">Scores</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 w-full max-w-3xl mx-auto px-4 pb-12 flex flex-col gap-6">
+
+    <!-- STEP 1: Add Players Section with Gender Selection -->
+    <section class="glass-panel rounded-3xl p-5 shadow-2xl relative overflow-hidden transition-all duration-300">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="flex h-2.5 w-2.5 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
+          </span>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Players / வீரர்கள்</h2>
+          <span id="playerCounter" class="text-xs bg-purple-500/20 text-purple-300 px-2.5 py-0.5 rounded-full font-semibold border border-purple-500/30">0 Added</span>
+        </div>
+        <button id="clearAllBtn" class="text-xs font-semibold text-rose-400 hover:text-rose-300 transition hidden active:scale-95">
+          <i class="fa-solid fa-trash-can mr-1"></i> Clear List
+        </button>
+      </div>
+
+      <!-- Input Form with Gender Toggle -->
+      <form id="addPlayerForm" class="flex flex-col gap-3 mb-4">
+      <!-- Input Form -->
+      <form id="addPlayerForm" class="flex flex-col gap-2.5 mb-4">
+        <div class="flex items-center gap-2">
+          <!-- Gender Selector Chips -->
+          <div class="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-2xl border border-slate-700/80">
+            <button type="button" id="genderMaleBtn" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-sm">
+              <span>👦</span>
+              <span>Male</span>
+            </button>
+            <button type="button" id="genderFemaleBtn" class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-pink-300 border border-transparent">
+              <span>👧</span>
+              <span>Female</span>
+            </button>
+          </div>
+
+          <div class="relative flex-1">
+            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+            <input 
+              type="text" 
+              id="playerNameInput" 
+              placeholder="Enter player's name..." 
+              maxlength="20"
+              autocomplete="off"
+              class="w-full glass-input text-white text-sm rounded-2xl pl-10 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-cyan-500/60 focus:border-cyan-400 placeholder-slate-500 transition"
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 font-bold text-sm tracking-wide text-white shadow-lg shadow-cyan-500/20 active:scale-95 transition flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>Add</span>
+          </button>
+        </div>
+
+        <!-- Matchmaking Rule Filter -->
+        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-xs">
+          <span class="text-slate-400 font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-sliders text-cyan-400"></i> Match Filter:
+          </span>
+          <div class="flex items-center gap-1 bg-slate-900/70 p-1 rounded-xl border border-slate-800">
+            <button type="button" id="matchAnyBtn" class="px-2.5 py-1 rounded-lg font-semibold text-[11px] bg-purple-600 text-white">Any</button>
+            <button type="button" id="matchOppositeBtn" class="px-2.5 py-1 rounded-lg font-semibold text-[11px] text-slate-400 hover:text-white">Opposite 👦⇄👧</button>
+            <button type="button" id="matchSameBtn" class="px-2.5 py-1 rounded-lg font-semibold text-[11px] text-slate-400 hover:text-white">Same 👦=👦</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Chips Container -->
+      <div id="playerChipsContainer" class="flex flex-wrap gap-2 min-h-[44px] items-center">
+        <!-- Rendered dynamically -->
+      </div>
+      
+      <!-- Warning Alert if < 2 players -->
+      <div id="minPlayerNotice" class="mt-3 text-xs text-amber-300/80 flex items-center gap-1.5 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Add at least <strong>2 players</strong> to spin the party wheels! / குறைந்தது 2 பேரை சேர்க்கவும்!</span>
+      </div>
+    </section>
+
+    <!-- Matchmaking & Game Mode Filters -->
+    <section class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 px-1">
+      <!-- Mode Toggle -->
+      <div class="bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 flex items-center gap-1 flex-1">
+        <button id="modePartyBtn" class="flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow">
+          <i class="fa-solid fa-champagne-glasses"></i>
+          <span>Classic Party</span>
+        </button>
+        <button id="modeWildBtn" class="flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-fire text-amber-400"></i>
+          <span>Wild & Spicy</span>
+        </button>
+      </div>
+
+      <!-- Prompt Creator Toggle -->
+      <button id="customPromptModalBtn" class="px-4 py-2.5 rounded-2xl glass-panel hover:bg-slate-800 text-xs sm:text-sm font-semibold text-slate-300 hover:text-pink-400 transition flex items-center justify-center gap-2 active:scale-95">
+        <i class="fa-solid fa-feather-pointed text-pink-400"></i>
+        <span>Write Custom</span>
+      </button>
+    </section>
+
+    <!-- STEP 3 & 4: Main Interactive Game Board -->
+    <section class="relative glass-panel rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-2xl border border-purple-500/20 overflow-hidden">
+      
+      <!-- Glowing Background Accent -->
+      <div id="glowCircle" class="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-purple-500/10 blur-3xl transition-all duration-700 pointer-events-none"></div>
+
+      <!-- Initial / Idle State -->
+      <div id="idleStateContainer" class="py-10 flex flex-col items-center">
+        <div class="relative mb-6">
+          <button 
+            id="mainTapBtn" 
+            class="tap-animate group w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-gradient-to-tr from-cyan-500 via-purple-600 to-pink-500 p-1.5 focus:outline-none transition-all active:scale-95"
+          >
+            <div class="w-full h-full rounded-full bg-slate-950 flex flex-col items-center justify-center group-hover:bg-slate-900 transition relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+              <i class="fa-solid fa-hand-pointer text-3xl sm:text-4xl text-pink-400 group-hover:scale-110 mb-2 transition-transform"></i>
+              <span class="text-3xl sm:text-4xl font-black tracking-widest bg-gradient-to-r from-cyan-300 via-white to-pink-300 bg-clip-text text-transparent">
+                TAP
+              </span>
+              <span class="text-[11px] font-semibold text-purple-300 tracking-wider uppercase mt-1">Spin Action</span>
+            </div>
+          </button>
+        </div>
+        <p class="text-slate-400 text-sm max-w-sm">Tap the button to pick who asks the question or gives the dare!</p>
+      </div>
+
+      <!-- Result State (Shown after Tap) -->
+      <div id="resultStateContainer" class="w-full flex flex-col items-center hidden">
+        <!-- Action Header Badge -->
+        <div class="mb-4">
+          <div id="actionBadge" class="inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs font-black tracking-widest uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-glow-cyan">
+            <i class="fa-solid fa-eye text-cyan-400"></i> TRUTH QUESTION
+          </div>
+        </div>
+
+        <!-- The Who's Who Assignment -->
+        <div class="w-full bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 sm:p-5 mb-5 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 shadow-inner">
+          <div class="flex flex-col items-center">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-0.5">Asker / Challenger</span>
+            <div class="flex items-center gap-2">
+              <span id="playerAGenderBadge" class="text-base">👦</span>
+              <span id="playerAName" class="text-lg sm:text-xl font-black text-cyan-400 tracking-wide">Alex</span>
+              <i class="fa-solid fa-crown text-amber-400 text-xs"></i>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 text-slate-500 font-bold text-xs uppercase px-2 py-1 rounded-full bg-slate-900 border border-slate-800">
+            <span id="actionConnectorText">ASKS A TRUTH TO</span>
+            <i class="fa-solid fa-arrow-right text-pink-400"></i>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-0.5">Target Player</span>
+            <div class="flex items-center gap-2">
+              <span id="playerBGenderBadge" class="text-base">👧</span>
+              <span id="playerBName" class="text-lg sm:text-xl font-black text-pink-400 tracking-wide">Priya</span>
+              <i class="fa-solid fa-bullseye text-rose-400 text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt Question / Dare Display (Bilingual Display) -->
+        <div class="relative w-full min-h-[140px] flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900/90 to-slate-950/90 border border-white/5 mb-6 shadow-xl">
+          <i class="fa-solid fa-quote-left text-2xl text-purple-500/30 absolute top-3 left-4"></i>
+          
+          <!-- English Prompt -->
+          <p id="promptText" class="text-base sm:text-xl font-bold text-slate-100 max-w-lg leading-relaxed relative z-10 text-center">
+            Prompt text goes here...
+          </p>
+
+          <!-- Divider -->
+          <div class="w-16 h-0.5 bg-gradient-to-r from-cyan-500 to-pink-500 my-3 rounded-full opacity-60"></div>
+
+          <!-- Tamil Prompt Translation -->
+          <p id="promptTextTamil" class="font-tamil text-sm sm:text-base font-semibold text-purple-200/90 max-w-lg leading-relaxed relative z-10 text-center">
+            தமிழ் மொழிபெயர்ப்பு இங்கே தோன்றும்...
+          </p>
+
+          <i class="fa-solid fa-quote-right text-2xl text-purple-500/30 absolute bottom-3 right-4"></i>
+
+          <!-- Deck Progress Counter Badge -->
+          <span id="deckCounterBadge" class="absolute bottom-2.5 right-4 text-[10px] font-semibold text-slate-500 bg-slate-950/80 px-2 py-0.5 rounded-full border border-slate-800">
+            Card 1/50
+          </span>
+        </div>
+
+        <!-- Actions / Result Decision -->
+        <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+          <div class="text-xs text-slate-400 font-medium">
+            Did <strong id="targetNameSummary" class="text-slate-200">Player</strong> complete it?
+          </div>
+
+          <div class="flex items-center gap-2.5 w-full sm:w-auto">
+            <!-- Forfeit Button -->
+            <button 
+              id="passBtn"
+              class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-rose-950/40 text-slate-300 hover:text-rose-400 border border-slate-700/60 font-bold text-xs transition active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <i class="fa-solid fa-egg text-amber-400"></i>
+              <span>Chicken / Pass</span>
+            </button>
+
+            <!-- Complete Button (+1 Point) -->
+            <button 
+              id="completeBtn"
+              class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-500/20 transition active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Done! (+1 pt)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Next Turn Quick Trigger -->
+        <button 
+          id="nextTurnBtn"
+          class="mt-6 w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 hover:opacity-95 text-white font-black text-sm tracking-widest uppercase shadow-lg shadow-pink-500/25 transition active:scale-95 flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Next Round (Tap)</span>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- Round Log History Preview -->
+    <section class="glass-panel rounded-3xl p-5 shadow-lg">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-purple-400"></i>
+          <span>Recent Activity</span>
+        </h3>
+        <span id="roundsCounter" class="text-[11px] text-slate-400 font-semibold">0 turns played</span>
+      </div>
+      <div id="activityLog" class="space-y-2 max-h-36 overflow-y-auto pr-1 text-xs">
+        <div class="text-slate-500 italic text-center py-4">No turns logged yet. Start tapping to ignite the party!</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL 1: Leaderboard & Scores -->
+  <div id="scoresModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-slate-700/80 shadow-2xl animate-pop relative">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-yellow-400/20 text-yellow-400 flex items-center justify-center">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Party Leaderboard</h3>
+        </div>
+        <button id="closeScoresBtn" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div id="scoresList" class="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+        <!-- Injected via JS -->
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button id="closeScoresBtn2" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition">
+          Close Leaderboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Custom Prompt Creator -->
+  <div id="customPromptModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-slate-700/80 shadow-2xl animate-pop relative">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-pen-nib text-pink-400"></i>
+          <h3 class="text-lg font-bold text-white">Write Your Own Prompt</h3>
+        </div>
+        <button id="closeCustomPromptBtn" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-400 mb-4">Want the asker to impose their own custom truth question or wild dare? Add it directly for the upcoming turn!</p>
+
+      <form id="customPromptForm" class="space-y-4">
+        <!-- Prompt Type Choice -->
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Category Type</label>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2 text-xs font-bold text-cyan-300 cursor-pointer">
+              <input type="radio" name="customType" value="truth" checked class="accent-cyan-400">
+              <span>Truth</span>
+            </label>
+            <label class="flex items-center gap-2 text-xs font-bold text-pink-300 cursor-pointer">
+              <input type="radio" name="customType" value="dare" class="accent-pink-400">
+              <span>Dare</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Prompt Text (English)</label>
+          <textarea 
+            id="customPromptInput" 
+            rows="2" 
+            placeholder="Type your spicy question or dare in English..." 
+            required 
+            class="w-full glass-input rounded-2xl p-3 text-sm text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-pink-500/60"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Tamil Translation (Optional)</label>
+          <textarea 
+            id="customPromptTamilInput" 
+            rows="2" 
+            placeholder="தமிழில் தட்டச்சு செய்யவும் (விரும்பினால்)..." 
+            class="w-full glass-input rounded-2xl p-3 text-sm text-white font-tamil placeholder-slate-500 outline-none focus:ring-2 focus:ring-pink-500/60"
+          ></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-pink-500/20 active:scale-95 transition"
+        >
+          Inject Prompt For Next Round
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Message Box (Never uses alert()) -->
+  <div id="toastNotification" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-2xl glass-panel border border-purple-500/40 text-sm font-semibold text-white shadow-2xl flex items-center gap-2.5 opacity-0 translate-y-8 transition-all duration-300 pointer-events-none z-50">
+    <i id="toastIcon" class="fa-solid fa-bell text-cyan-400"></i>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // --- MASSIVE 200 PROMPT DATABASE (50 CLASSIC TRUTHS, 50 CLASSIC DARES, 50 WILD TRUTHS, 50 WILD DARES) ---
+    const PROMPT_DATABASE = {
+      party: {
+        truths: [
+          { en: "What is the most embarrassing song currently saved on your playlist?", ta: "உங்க பிளேலிஸ்ட்டில் இருக்கும் மிகவும் கேவலமான அல்லது அசிங்கமான பாடல் எது?" },
+          { en: "What is the weirdest lie you have ever told to escape hanging out with someone?", ta: "ஒருவருடன் வெளியே செல்வதை தவிர்க்க நீங்கள் சொன்ன விசித்திரமான பொய் எது?" },
+          { en: "If you had to swap lives with anyone in this room for 24 hours, who would it be?", ta: "இந்த அறையில் உள்ள ஒருவருடன் 24 மணி நேரம் வாழ்க்கை மாற வேண்டும் என்றால், யாரைத் தேர்ந்தெடுப்பீர்கள்?" },
+          { en: "What was your most awkward or hilarious first date experience?", ta: "உங்கள் முதல் டேட்டிங்கில் நடந்த மிகவும் நகைச்சுவையான அல்லது சங்கடமான சம்பவம் எது?" },
+          { en: "Have you ever stalked someone's social media so hard that you accidentally liked an old photo?", ta: "யாரையாவது சமூக வலைத்தளத்தில் உளவு பார்த்து, தவறுதலாக அவர்களின் பழைய போட்டோவை லைக் செய்திருக்கிறீர்களா?" },
+          { en: "What silly habit or obsession do you secretly have that nobody knows about?", ta: "யாருக்கும் தெரியாத உங்கள் விசித்திரமான ரகசியப் பழக்கம் என்ன?" },
+          { en: "If you could erase one text message you have ever sent, which one would it be?", ta: "நீங்கள் அனுப்பிய மெசேஜ்களில் ஒன்றை அழிக்க முடிந்தால், அது எதாக இருக்கும்?" },
+          { en: "Who was your very first childhood or celebrity crush?", ta: "உங்கள் முதல் க்ரஷ் (சினிமா பிரபலம் அல்லது பள்ளித் தோழர்) யார்?" },
+          { en: "What is the worst hairstyle or fashion disaster you have ever rocked?", ta: "நீங்கள் செய்ததிலேயே மிக மோசமான ஹேர்ஸ்டைல் அல்லது ஆடை எது?" },
+          { en: "Have you ever secretly re-gifted a present to another friend in this group?", ta: "உங்களுக்கு வந்த பரிசை, யாருக்கும் தெரியாமல் மற்றொரு நண்பருக்கு மாற்றி கொடுத்திருக்கிறீர்களா?" },
+          { en: "What weird food combination do you love that disgusts everyone else?", ta: "மற்றவர்களுக்கு அருவருப்பாகத் தோன்றும் ஆனால் உங்களுக்குப் பிடித்த விசித்திரமான உணவு எது?" },
+          { en: "What is the funniest or weirdest thing you searched on Google recently?", ta: "சமீபத்தில் நீங்கள் கூகுளில் தேடிய மிக விசித்திரமான விஷயம் என்ன?" },
+          { en: "What is the longest time you have ever gone without taking a shower?", ta: "குளிக்காமல் நீங்கள் இருந்த அதிகபட்ச நாட்கள் எத்தனை?" },
+          { en: "Have you ever blamed a pet or sibling for something that was 100% your fault?", ta: "நீங்கள் செய்த தப்பை செல்லப் பிராணி அல்லது உடன் பிறந்தவர்கள் மீது பழி போட்டிருக்கிறீர்களா?" },
+          { en: "What childish fear do you secretly still have even today?", ta: "இன்றும் உங்களுக்குள் இருக்கும் ஒரு குழந்தைத்தனமான பயம் எது?" },
+          { en: "If you won 5 crore rupees tomorrow, what is the first ridiculous thing you would buy?", ta: "நாளை உங்களுக்கு 5 கோடி ரூபாய் கிடைத்தால், நீங்கள் செய்யும் முதல் கிறுக்குத்தனமான செலவு என்ன?" },
+          { en: "What was the most awkward misunderstanding you had over a WhatsApp text?", ta: "வாட்ஸ்அப் மெசேஜால் உங்களுக்கு ஏற்பட்ட மிகப்பெரிய தவறான புரிதல் என்ன?" },
+          { en: "What popular blockbuster movie does everyone love, but you secretly hate?", ta: "அனைவருக்கும் பிடித்த ஆனால் உங்களுக்கு பிடிக்காத ஹிட் சினிமா படம் எது?" },
+          { en: "Have you ever practiced giving a speech or proposal in front of a mirror?", ta: "கண்ணாடி முன் நின்று காதல் அல்லது சினிமா வசனம் பேசி பயிற்சி செய்திருக்கிறீர்களா?" },
+          { en: "Who in this room would survive the longest in a zombie apocalypse?", ta: "ஜாம்பி தாக்குதல் நடந்தால், இந்த அறையில் யார் அதிக காலம் உயிர் பிழைப்பார்கள்?" },
+          { en: "What is the most ridiculous excuse you ever gave a teacher or college professor?", ta: "பள்ளியிலோ கல்லூரியிலோ நீங்கள் சொன்ன மிகச் சிரிப்பான பொய் காரணம் என்ன?" },
+          { en: "Have you ever accidentally forwarded a screenshot of a chat to the exact same person?", ta: "ஒருவரைப் பற்றி பேசிய ஸ்கிரீன்ஷாட்டையே தவறுதலாக அவரிடமே அனுப்பியிருக்கிறீர்களா?" },
+          { en: "What was your biggest cooking disaster of all time?", ta: "சமையல் செய்ய முயற்சி செய்து நீங்கள் பண்ணிய மிகப்பெரிய சொதப்பல் என்ன?" },
+          { en: "If you could only eat one south Indian dish for the rest of your life, what would it be?", ta: "வாழ்நாள் முழுவதும் ஒரே ஒரு தென்னிந்திய உணவை மட்டுமே சாப்பிட வேண்டும் என்றால் எதை உண்பீர்கள்?" },
+          { en: "What is one completely useless secret talent you possess?", ta: "உங்களிடம் இருக்கும் முற்றிலும் பிரயோஜனமில்லாத விசித்திரமான திறமை என்ன?" },
+          { en: "Have you ever faked being sick to avoid a family function or wedding?", ta: "குடும்ப விசேஷத்திற்கு செல்லாமல் இருக்க உடம்பு சரியில்லை என்று பொய் சொல்லியிருக்கிறீர்களா?" },
+          { en: "Who is the biggest chatterbox or loudmouth in this group?", ta: "நம்ம கூட்டத்தில் மிக அதிகமாக இடைவிடாமல் பேசும் நபர் யார்?" },
+          { en: "What was the most awkward compliment you have ever received?", ta: "உங்களுக்குக் கிடைத்த மிகவும் சங்கடமான பாராட்டு எது?" },
+          { en: "Have you ever laughed out loud at a serious or tragic moment?", ta: "சீரியஸான அல்லது அமைதியான நேரத்தில் அடக்க முடியாமல் சிரித்திருக்கிறீர்களா?" },
+          { en: "What is the most childish movie or cartoon you still enjoy watching?", ta: "இப்போதும் நீங்கள் விரும்பிப் பார்க்கும் கார்ட்டூன் அல்லது அனிமேஷன் படம் எது?" },
+          { en: "What is one purchase you immediately regretted after buying?", ta: "வாங்கிய உடனே 'ஐயோ காசு வேஸ்ட்' என்று வருத்தப்பட்ட பொருள் எது?" },
+          { en: "Have you ever secretly checked someone's phone notifications when they walked away?", ta: "ஒருவர் வெளியே சென்றதும் அவர்களின் போன் நோட்டிஃபிகேஷனை எட்டிப் பார்த்திருக்கிறீர்களா?" },
+          { en: "What is your biggest pet peeve when traveling with friends?", ta: "நண்பர்களுடன் சுற்றுலா செல்லும்போது உங்களை அதிகம் எரிச்சலூட்டும் விஷயம் எது?" },
+          { en: "If your life was made into a movie, which Kollywood actor would play you?", ta: "உங்கள் வாழ்க்கை படமாக எடுக்கப்பட்டால், உங்களுக்கு யார் நடிப்பார்கள்?" },
+          { en: "Have you ever walked into a glass door or wall in public?", ta: "பொது இடத்தில் கண்ணாடி கதவு அல்லது சுவரில் முட்டியிருக்கிறீர்களா?" },
+          { en: "What is the most embarrassing nickname your parents or relatives call you?", ta: "வீட்டில் உங்கள் பெற்றோர் உங்களை அழைக்கும் செல்ல (அசிங்கமான) பெயர் என்ன?" },
+          { en: "What was the worst haircut you ever got before a major festival or event?", ta: "ஒரு பெரிய விசேஷத்திற்கு முன் உங்களுக்கு அமைந்த மிக மோசமான கட்டிங் எது?" },
+          { en: "If you were granted 3 wishes right now, what would your first wish be?", ta: "இப்போது உங்களுக்கு 3 வரங்கள் கிடைத்தால், உங்கள் முதல் ஆசை என்னவாக இருக்கும்?" },
+          { en: "Have you ever pretended to recognize someone whose name you completely forgot?", ta: "பெயர் சுத்தமாக மறந்துபோன ஒருவரிடம் தெரிந்தவர் போல பாசாங்கு செய்திருக்கிறீர்களா?" },
+          { en: "What is the most ridiculous superstitious belief you secretly follow?", ta: "நீங்கள் ரகசியமாக பின்பற்றும் முட்டாள்தனமான மூடநம்பிக்கை எது?" },
+          { en: "Who among everyone here takes the longest to get ready for an outing?", ta: "வெளியே கிளம்புவதற்கு இங்குள்ளவர்களில் யார் அதிக நேரம் எடுத்துக்கொள்வார்?" },
+          { en: "Have you ever worn clothes picked straight out of the dirty laundry basket?", ta: "துவைக்கப் போட்ட அழுக்கு துணியை மீண்டும் எடுத்து அணிந்திருக்கிறீர்களா?" },
+          { en: "What is the weirdest rumor you ever heard spread about yourself?", ta: "உங்களைப் பற்றி நீங்கள் கேள்விப்பட்ட மிக விசித்திரமான வதந்தி என்ன?" },
+          { en: "If you could instantly master one musical instrument, which would it be?", ta: "ஒரே நொடியில் ஒரு இசைக்கருவியை வாசிக்க கற்றுக்கொள்ள முடியுமென்றால், எதை தேர்ந்தெடுப்பீர்கள்?" },
+          { en: "What is the funniest fight or argument you ever had with a close friend?", ta: "நெருங்கிய நண்பருடன் மிக அற்பமான விஷயத்திற்காக போட்ட விசித்திரமான சண்டை என்ன?" },
+          { en: "Have you ever dropped food on the floor and quickly eaten it using the 5-second rule?", ta: "கீழே விழுந்த உணவை 5-வினாடி கணக்கு போட்டு எடுத்து சாப்பிட்டிருக்கிறீர்களா?" },
+          { en: "What is the most useless piece of advice someone ever gave you?", ta: "யாரோ ஒருவர் உங்களுக்குக் கொடுத்த மிக மொக்கையான அறிவுரை எது?" },
+          { en: "If you could mute one person on social media without them knowing, who would it be?", ta: "யாருக்கும் தெரியாமல் சமூக வலைத்தளத்தில் யாரை ம்யூட் செய்வீர்கள்?" },
+          { en: "Have you ever pretended to laugh at a joke that you didn't understand at all?", ta: "புரியாத ஒரு மொக்கை ஜோக்கிற்கு ஏதோ புரிந்தது போல சிரித்திருக்கிறீர்களா?" },
+          { en: "What is one thing you can never say 'No' to?", ta: "உங்களால் எப்போதுமே 'வேண்டாம்' என்று மறுக்க முடியாத ஒரு விஷயம் என்ன?" }
+        ],
+        dares: [
+          { en: "Deliver a famous punch dialogue in an exaggerated cartoon voice.", ta: "புகழ்பெற்ற ஒரு சினிமா பஞ்ச் டயலாக்கை கார்ட்டூன் குரலில் பேசிக் காட்டுங்கள்." },
+          { en: "Do a 20-second fast kuthu dance without any background music.", ta: "பாட்டே இல்லாமல் 20 வினாடிகளுக்கு வேகமான குத்து டான்ஸ் ஆடுங்கள்." },
+          { en: "Let the person to your left restyle your hair using only their hands.", ta: "உங்கள் இடப்பக்கம் உள்ளவரை கைகளால் உங்கள் தலைமுடியை மாற்றி சீவ அனுமதியுங்கள்." },
+          { en: "Do your best dramatic slow-motion catwalk across the room.", ta: "அறையின் குறுக்கே மிக நாடகத்தனமாக ஸ்லோ-மோஷன் கேட்வாக் செய்து காட்டுங்கள்." },
+          { en: "Balance a water bottle or small cup on your head for 30 seconds.", ta: "ஒரு தண்ணீர் பாட்டிலை உங்கள் தலையில் 30 விநாடிகள் விழாமல் சமநிலைப்படுத்துங்கள்." },
+          { en: "Sing the chorus of your favorite song like an opera singer.", ta: "உங்களுக்குப் பிடித்த பாடலின் பல்லவியை ஆப்ரா (Opera) பாடகர் போல பாடுங்கள்." },
+          { en: "Do 10 rapid squats while loudly shouting your own nickname on each rep.", ta: "ஒவ்வொரு முறையும் உங்கள் பெயரை கத்திக்கொண்டே 10 முறை ஸ்குவாட்ஸ் (squats) செய்யுங்கள்." },
+          { en: "Swap your slippers or shoes with the player sitting to your right.", ta: "உங்கள் வலதுபுறம் அமர்ந்திருப்பவருடன் செருப்பு அல்லது ஷூவை மாற்றிக்கொள்ளுங்கள்." },
+          { en: "Send an innocent monkey emoji 🐵 to the 3rd person on your WhatsApp recent chats.", ta: "உங்கள் வாட்ஸ்அப் சமீபத்திய பட்டியலில் உள்ள 3-வது நபருக்கு குரங்கு எமோஜி 🐵 அனுப்புங்கள்." },
+          { en: "Narrate everything that happens in the room like a cricket commentator for 1 minute.", ta: "அடுத்த 1 நிமிடத்திற்கு அறையில் நடப்பதை கிரிக்கெட் வர்ணனையாளர் போல வர்ணிக்கவும்." },
+          { en: "Eat a slice of lemon or a pinch of salt with a big, calm smile.", ta: "ஒரு சிட்டிகை உப்பு அல்லது எலுமிச்சையை முகத்தை சுளிக்காமல் சிரித்தபடி சுவையுங்கள்." },
+          { en: "Do an impression of another player here until someone correctly guesses who it is.", ta: "யாராவது கண்டுபிடிக்கும் வரை இங்குள்ள ஒருவரைப் போல நடித்துக் காட்டுங்கள்." },
+          { en: "Pretend your mobile phone is a magic mirror and talk to it for 30 seconds.", ta: "உங்கள் மொபைலை மந்திர கண்ணாடி போல நினைத்து 30 நொடிகள் அதனுடன் உரையாடுங்கள்." },
+          { en: "Let someone draw a tiny cute mustache on your face using an eye-pencil or washable pen.", ta: "உங்கள் முகத்தில் அழகான குட்டி மீசையை யாராவது வரைய அனுமதியுங்கள்." },
+          { en: "Hold a wall sit or plank position for 30 seconds while counting backwards from 50.", ta: "50-லிருந்து பின்னோக்கி எண்ணியபடி 30 விநாடிகள் பிளாங்க் அல்லது வால்-சிட் செய்யுங்கள்." },
+          { en: "Call a random friend and enthusiastically wish them a Happy Birthday, even if it is not.", ta: "ஒரு நண்பருக்கு போன் செய்து பிறந்தநாளே இல்லாதபோதும் உற்சாகமாக வாழ்த்து சொல்லுங்கள்." },
+          { en: "Speak without closing your lips or teeth for the next 45 seconds.", ta: "அடுத்த 45 வினாடிகளுக்கு உதடுகளை மூடாமல் தொடர்ந்து பேசுங்கள்." },
+          { en: "Perform a classic robotic dance for 25 seconds with stiff movements.", ta: "25 வினாடிகளுக்கு ரோபோ போல உடலை விறைப்பாக வைத்து நடனம் ஆடுங்கள்." },
+          { en: "Act like a frozen statue and do not blink or laugh for 30 seconds.", ta: "30 வினாடிகளுக்கு கண் சிமிட்டாமல், சிரிக்காமல் சிலை போல நில்லுங்கள்." },
+          { en: "Show the most hilarious or unhinged photo in your phone gallery to the group.", ta: "உங்கள் போன் கேலரியில் உள்ள மிக வேடிக்கையான போட்டோவை அனைவருக்கும் காட்டுங்கள்." },
+          { en: "Deliver an emotional 30-second farewell speech to an empty coffee mug or water bottle.", ta: "ஒரு காலி பாட்டிலிடம் மிக உருக்கமாக பிரியாவிடை விடைபெறும் உரை நிகழ்த்துங்கள்." },
+          { en: "Attempt the Michael Jackson moonwalk across the room with funny sound effects.", ta: "மைக்கேல் ஜாக்சன் மூன்வாக் (Moonwalk) செய்து காட்டுங்கள்." },
+          { en: "Speak completely in rhyming lines for your next 3 sentences.", ta: "நீங்கள் பேசும் அடுத்த 3 வாக்கியங்களை எதுகை மோனை ரைமிங்கில் பேசுங்கள்." },
+          { en: "Allow another player to send a harmless GIF to any family or friends group.", ta: "நண்பர்கள் குழுவிற்கு ஒரு எளிய GIF அனுப்ப மற்றொரு வீரரை அனுமதியுங்கள்." },
+          { en: "Give a 30-second high-energy motivational speech to a pillow or chair.", ta: "ஒரு நாற்காலிக்கு ஆவேசமாக 30 நொடிகள் ஊக்கமளிக்கும் மோட்டிவேஷன் ஸ்பீச் கொடுங்கள்." },
+          { en: "Pretend to be an airline flight attendant explaining seatbelt and safety instructions.", ta: "விமானப் பணிப்பெண் போல சீட்பெல்ட் போடும் முறையை சைகையில் செய்து காட்டுங்கள்." },
+          { en: "Text 'I know your secret' to someone in your contacts and do not reply for 5 minutes.", ta: "உங்கள் நண்பருக்கு 'உன் ரகசியம் எனக்குத் தெரியும்' என அனுப்பி 5 நிமிடம் பதிலளிக்காமல் இருங்கள்." },
+          { en: "Spin around 7 times in a circle and then try to walk a straight line.", ta: "7 முறை சுற்றிவிட்டு நேர்கோட்டில் நடக்க முயற்சி செய்யுங்கள்." },
+          { en: "Imitate your favorite animal sound loudly 3 times.", ta: "உங்களுக்குப் பிடித்த விலங்கின் சத்தத்தை 3 முறை சத்தமாக எழுப்புங்கள்." },
+          { en: "Let the person across from you feed you a snack or chip blindfolded.", ta: "கண்களை மூடிக்கொண்டு எதிரில் இருப்பவர் ஊட்டிவிடும் உணவை சாப்பிடுங்கள்." },
+          { en: "Talk like a vintage 1980s radio news anchor for 1 minute.", ta: "80-களின் பழைய வானொலி செய்தி வாசிப்பாளர் போல 1 நிமிடம் செய்தி வாசியுங்கள்." },
+          { en: "Do 5 push-ups while clapping your hands between each rep.", ta: "ஒவ்வொரு முறையும் கைதட்டி 5 புஷ்-அப்ஸ் (push-ups) எடுக்க முயற்சி செய்யுங்கள்." },
+          { en: "Try to lick your own elbow without giving up for 20 seconds.", ta: "20 வினாடிகளுக்கு உங்கள் முழங்கையை நக்க முயற்சி செய்து காட்டுங்கள்." },
+          { en: "Wear your jacket or shirt backwards until the next round ends.", ta: "அடுத்த சுற்று முடியும் வரை உங்கள் சட்டையை பின்னால் திருப்பி போட்டுக் கொள்ளுங்கள்." },
+          { en: "Act like a grumpy grandma or grandpa giving life advice for 45 seconds.", ta: "கோபக்கார தாத்தா அல்லது பாட்டி போல 45 விநாடிகள் அறிவுரை சொல்லுங்கள்." },
+          { en: "Do a dramatic crying scene like an over-the-top daily soap opera actor.", ta: "டிவி சீரியல் நடிகர் போல அழுது புலம்பி நாடகத்தனமாக நடித்துக் காட்டுங்கள்." },
+          { en: "Pretend to be a security guard checking everyone in the room with a scanner.", ta: "பாதுகாப்பு காவலர் போல அனைவரையும் சோதனையிடும் பாவனையை செய்யுங்கள்." },
+          { en: "Try to juggle 3 small objects (like limes, pens or balls) for 15 seconds.", ta: "3 சிறிய பொருட்களை வைத்து ஜக்லிங் (juggle) செய்ய முயற்சி செய்யுங்கள்." },
+          { en: "Walk on your knees like a toddler across the living area.", ta: "குழந்தை போல மண்டியிட்டு அறையின் ஒரு மூலையிலிருந்து மறு மூலைக்கு செல்லுங்கள்." },
+          { en: "Recite your favorite tongue-twister 5 times quickly without tripping.", ta: "ஒரு கடினமான தமிழ் நாநெகிழ் வாக்கியத்தை 5 முறை வேகமாக தவறு இல்லாமல் சொல்லுங்கள்." },
+          { en: "Sing any nursery rhyme with the swag of a hard-core gangster rapper.", ta: "மழலையர் ரைம்ஸை (Nursery Rhyme) ஒரு கேங்க்ஸ்டர் ராப் ஸ்டைலில் பாடுங்கள்." },
+          { en: "Act like a high-fashion runway model and pose dramatically whenever someone snaps.", ta: "யாராவது சொடக்கு போடும் போதெல்லாம் வித்தியாசமான ஃபேஷன் போஸ் கொடுங்கள்." },
+          { en: "Do 15 jumping jacks while loudly spelling out your full name.", ta: "உங்கள் பெயரின் எழுத்துக்களை உரக்கச் சொல்லியபடி 15 ஜம்பிங் ஜாக்ஸ் செய்யுங்கள்." },
+          { en: "Allow someone to apply lipstick or lip balm on you without using a mirror.", ta: "கண்ணாடி பார்க்காமல் லிப்ஸ்டிக் அல்லது பாம் பூச ஒருவரை அனுமதியுங்கள்." },
+          { en: "Pretend that you are trapped inside an invisible glass box for 30 seconds.", ta: "கண்ணுக்குத் தெரியாத கண்ணாடிக் கூட்டுக்குள் மாட்டிக்கொண்டது போல மைம் (Mime) செய்யுங்கள்." },
+          { en: "Stand on one leg with arms wide open like a crane for 40 seconds.", ta: "கொக்கு போல ஒரே காலில் 40 விநாடிகள் அசையாமல் நில்லுங்கள்." },
+          { en: "Do an impression of a screaming tea kettle or pressure cooker whistle.", ta: "குக்கர் விசில் அல்லது கொதிக்கும் டீ கெட்டில் சத்தத்தை மிமிக்ரி செய்யுங்கள்." },
+          { en: "Whisper everything you say until your turn comes up again.", ta: "உங்கள் அடுத்த முறை வரும் வரை யார் பேசினாலும் கிசுகிசுப்பாக மட்டுமே பேசுங்கள்." },
+          { en: "High-five everyone in the room while maintaining absolute deadpan serious eye contact.", ta: "முகத்தில் எவ்வித உணர்ச்சியும் காட்டாமல் அறையில் உள்ள அனைவருக்கும் ஹை-ஃபைவ் கொடுங்கள்." },
+          { en: "Take an extreme zoom-in selfie making the silliest face possible and save it as your wallpaper for 5 minutes.", ta: "ஒரு விசித்திரமான கோமாளி செல்ஃபி எடுத்து 5 நிமிடம் உங்கள் போன் வால்பேப்பராக வையுங்கள்." }
+        ]
+      },
+      wild: {
+        truths: [
+          { en: "Who in this room would you least want to be trapped in an elevator with, and why?", ta: "இந்த அறையில் உள்ளவர்களில் யாருடன் லிஃப்டில் மாட்டிக்கொள்ள விரும்ப மாட்டீர்கள்? ஏன்?" },
+          { en: "What is the biggest romantic red flag you knowingly ignored because you liked someone?", ta: "ஒருவரைப் பிடித்ததால் நீங்கள் தெரிந்தே கண்டுகொள்ளாமல் விட்ட மிகப்பெரிய தவறு என்ன?" },
+          { en: "Have you ever had romantic feelings for a close friend's partner or crush?", ta: "நெருங்கிய நண்பரின் காதலர் அல்லது க்ரஷ் மீது உங்களுக்கு எப்போதாவது ஈர்ப்பு வந்திருக்கிறதா?" },
+          { en: "What is the most scandalous secret you have successfully kept hidden from your parents?", ta: "பெற்றோருக்கு தெரியாமல் நீங்கள் காப்பாற்றி வைத்துள்ள மிகப்பெரிய ரகசியம் என்ன?" },
+          { en: "If you were forced to go on a romantic date with someone in this room right now, who would it be?", ta: "இங்குள்ள ஒருவருடன் டேட்டிங் செல்ல வேண்டும் என்று கட்டாயப்படுத்தினால், யாரை தேர்ந்தெடுப்பீர்கள்?" },
+          { en: "Have you ever ghosted someone who truly didn't deserve it? What really happened?", ta: "ஒரு நல்ல நபருக்கு எந்த காரணமும் சொல்லாமல் திடீரென பேசுவதை நிறுத்தியிருக்கிறீர்களா?" },
+          { en: "What was the most awkward or regretful romantic kiss of your life?", ta: "உங்கள் வாழ்க்கையில் நடந்த மிக மோசமான அல்லது வருந்திய முத்தம் எது?" },
+          { en: "Have you ever secretly checked your partner's or close friend's private chat messages?", ta: "உங்கள் பார்ட்னர் அல்லது நண்பரின் தனிப்பட்ட வாட்ஸ்அப் சாட்டிங்கை திருட்டுத்தனமாக பார்த்திருக்கிறீர்களா?" },
+          { en: "What was the pettiest or silliest reason you ever broke up with someone or stopped talking?", ta: "மிக அற்பமான ஒரு காரணத்திற்காக ஒருவருடன் உறவை முறித்துக் கொண்டது உண்டா?" },
+          { en: "What rumor about you was actually 100% true, even though you denied it to everyone?", ta: "நீங்கள் பொய் என்று மறுத்த ஆனால் உண்மையில் முற்றிலும் உண்மையான வதந்தி எது?" },
+          { en: "Have you ever lied on your resume or during an interview and actually gotten away with it?", ta: "வேலை நேர்காணலில் அப்பட்டமாக பொய் சொல்லி அந்த வேலையைப் பெற்றிருக்கிறீர்களா?" },
+          { en: "Who in this group do you think has the most questionable taste in partners?", ta: "நம்ம கூட்டத்தில் பார்ட்னரை தேர்ந்தெடுப்பதில் மிக மோசமான ரசனை கொண்டவர் யார்?" },
+          { en: "What is your guiltiest pleasure that you would never admit on your social media?", ta: "சமூக வலைத்தளங்களில் ஒருபோதும் ஒப்புக்கொள்ளாத உங்கள் ரகசிய விருப்பம் எது?" },
+          { en: "Have you ever flirted your way out of a traffic police ticket or penalty fine?", ta: "ட்ராஃபிக் போலீசிடம் நைசாக பேசி ஃபைன் கட்டாமல் தப்பியிருக்கிறீர்களா?" },
+          { en: "What is the most inappropriate thought you had during a solemn event like a wedding or meeting?", ta: "ஒரு தீவிரமான அல்லது அமைதியான நிகழ்வின் போது உங்கள் மனதில் ஓடிய விபரீதமான சிந்தனை என்ன?" },
+          { en: "If you could read the mind of one person in this room for 10 minutes, whose mind would you pick?", ta: "இங்குள்ள ஒருவரின் மனதை 10 நிமிடம் படிக்க முடிந்தால், யார் மனதை படிப்பீர்கள்?" },
+          { en: "What is the deepest or biggest lie you ever told straight to someone in this room?", ta: "இங்குள்ள ஒருவரின் முகத்தைப் பார்த்து நீங்கள் சொன்ன மிகப்பெரிய பொய் என்ன?" },
+          { en: "Have you ever sent a spicy or risky text to the wrong person by pure mistake?", ta: "தவறுதலாக ஒரு முக்கியமான அல்லது அந்தரங்க மெசேஜை வேறு நபருக்கு அனுப்பியிருக்கிறீர்களா?" },
+          { en: "If all of us were stranded on an island with no food, who would get voted off first?", ta: "நாம் அனைவரும் ஒரு தீவில் மாட்டிக்கொண்டால், முதலில் யாரை வெளியேற்றுவீர்கள்?" },
+          { en: "What is one harsh truth about someone in this room that you have kept to yourself?", ta: "இங்குள்ள ஒருவரைப் பற்றி நீங்கள் வெளியில் சொல்லாமல் மனதில் பூட்டி வைத்துள்ள உண்மை என்ன?" },
+          { en: "Have you ever secretly wished for a couple you know to break up?", ta: "உங்களுக்குத் தெரிந்த ஒரு காதல் ஜோடி பிரிய வேண்டும் என்று மனதிற்குள் நினைத்திருக்கிறீர்களா?" },
+          { en: "What was your most reckless or crazy impulse purchase when you were emotional?", ta: "மன உளைச்சலில் நீங்கள் வாங்கிய மிக முட்டாள்தனமான விலையுயர்ந்த பொருள் என்ன?" },
+          { en: "Have you ever pretended to like a gift or gesture that you actually despised?", ta: "மனதிற்குள் சுத்தமாக பிடிக்காத ஒரு பரிசை மிகவும் பிடித்தது போல நடித்திருக்கிறீர்களா?" },
+          { en: "What is the most embarrassing direct message (DM) currently sitting in your inbox?", ta: "உங்கள் இன்ஸ்டாகிராம் DM-ல் இருக்கும் மிகவும் தர்மசங்கடமான மெசேஜ் எது?" },
+          { en: "If you could erase every memory of one ex or former friend, who would you choose?", ta: "உங்கள் நினைவிலிருந்து ஒரு முன்னாள் காதலர் அல்லது நண்பரை முற்றிலும் அழிக்க முடிந்தால், யார் அவர்?" },
+          { en: "Have you ever created a fake social media account just to spy on someone?", ta: "யாரையாவது உளவு பார்க்க போலி (Fake) ஐடி உருவாக்கியிருக்கிறீர்களா?" },
+          { en: "What is the longest grudge you have ever held against someone over something small?", ta: "மிகச் சிறிய விஷயத்திற்காக பல வருடங்கள் ஒருவர் மீது வைத்திருந்த தீராத கோபம் என்ன?" },
+          { en: "Who here do you think is the biggest drama magnet or secretly loves chaos?", ta: "இங்குள்ளவர்களில் யார் அதிக ட்ராமா செய்பவர் அல்லது சண்டையை ரசிப்பவர்?" },
+          { en: "Have you ever accidentally damaged someone's expensive item and never confessed?", ta: "ஒருவரின் விலைமதிப்பற்ற பொருளை உடைத்துவிட்டு சொல்லாமல் மறைத்திருக்கிறீர்களா?" },
+          { en: "What is the most wild or out-of-control party night you have ever survived?", ta: "உங்கள் வாழ்க்கையில் நீங்கள் அனுபவித்த மிகக் காட்டுத்தனமான பார்ட்டி எது?" },
+          { en: "Have you ever stayed in a relationship purely because you didn't want to be alone?", ta: "தனிமையை தாங்க முடியாமல் மட்டும் ஒரு உறவில் நீடித்திருக்கிறீர்களா?" },
+          { en: "What is one physical or personality feature you are most insecure about?", ta: "உங்களைப் பற்றி உங்களுக்குள் இருக்கும் மிகப்பெரிய தாழ்வு மனப்பான்மை என்ன?" },
+          { en: "Who was the last person you searched for on Instagram or Facebook search history?", ta: "சமூக வலைத்தளத்தில் நீங்கள் கடைசியாக தேடிய நபர் யார்?" },
+          { en: "Have you ever eavesdropped on a private argument between friends or family?", ta: "நண்பர்கள் அல்லது குடும்பத்தினர் போட்ட தனிப்பட்ட சண்டையை மறைந்திருந்து ஒட்டுக் கேட்டிருக்கிறீர்களா?" },
+          { en: "What is one secret you swore you would take to the grave?", ta: "கல்லறை வரை யாரிடமும் சொல்ல மாட்டேன் என்று சபதம் எடுத்த ஒரு ரகசியம் என்ன?" },
+          { en: "If you had to unfollow someone in this room right now, who would hurt you the least to cut off?", ta: "இங்குள்ள ஒருவரை உடனே அன்ஃபாலோ செய்ய வேண்டும் என்றால், யாரை செய்வீர்கள்?" },
+          { en: "Have you ever lied about your age, height, or job title on a dating app?", ta: "டேட்டிங் ஆப்பில் உங்கள் வயது, உயரம் அல்லது வேலையைப் பற்றி பொய் கூறியிருக்கிறீர்களா?" },
+          { en: "What was the most awkward romantic situation you got caught in red-handed?", ta: "கையும் களவுமாக மாட்டிக்கொண்ட மிகச் சங்கடமான காதல் தருணம் எது?" },
+          { en: "Have you ever pretended to be on an important phone call just to avoid an awkward encounter?", ta: "யாரையாவது தவிர்க்க போனில் பேசுவது போல பாசாங்கு செய்திருக்கிறீர்களா?" },
+          { en: "What is the most superficial reason you refused to go on a second date with someone?", ta: "மிகச் சாதாரண ஒரு அற்பக் காரணத்திற்காக ஒருவரை நிராகரித்தது உண்டா?" },
+          { en: "Who in this room do you think would be the worst person to go into business with?", ta: "இங்குள்ளவர்களில் யாருடன் சேர்ந்து தொழில் தொடங்கினால் நஷ்டம் வரும் என நினைக்கிறீர்கள்?" },
+          { en: "Have you ever laughed at someone's misfortune even though you knew it was wrong?", ta: "ஒருவருக்கு நேர்ந்த கஷ்டத்தைப் பார்த்து மனதிற்குள் சிரித்திருக்கிறீர்களா?" },
+          { en: "What is the most ridiculous romantic pickup line you have ever unironically used?", ta: "நீங்கள் சீரியஸாக பயன்படுத்தி பல்பு வாங்கிய பிக்கப் லைன் எது?" },
+          { en: "Have you ever deleted a post because it didn't get enough likes within the first hour?", ta: "ஒரு மணி நேரத்தில் போதிய லைக்ஸ் வரவில்லை என்பதற்காக பதிவை டெலிட் செய்திருக்கிறீர்களா?" },
+          { en: "What is something illegal or rule-breaking you did and never got caught for?", ta: "விதியை மீறி நீங்கள் செய்து மாட்டாமல் தப்பிய காரியம் எது?" },
+          { en: "Who among everyone present here has the most toxic trait, and what is it?", ta: "நம்ம கூட்டத்தில் இருக்கும் ஒருவரின் மிக நச்சுத்தன்மையான பழக்கம் என்ன?" },
+          { en: "Have you ever intentionally dressed to outshine or make someone else jealous?", ta: "ஒருவரை பொறாமைப்பட வைக்க வேண்டும் என்றே திட்டமிட்டு ஆடை அணிந்து சென்றிருக்கிறீர்களா?" },
+          { en: "What is the most embarrassing thing your parents ever caught you doing?", ta: "உங்கள் பெற்றோரிடம் கையும் களவுமாக பிடிபட்ட தர்மசங்கடமான செயல் என்ன?" },
+          { en: "If you had to kiss someone of the same gender in this room, who would you choose?", ta: "இங்குள்ள ஒரே பாலினத்தைச் சேர்ந்த ஒருவருக்கு முத்தம் கொடுக்க வேண்டும் என்றால், யாரைத் தேர்ந்தெடுப்பீர்கள்?" },
+          { en: "What is the real reason your last relationship ended?", ta: "உங்கள் கடைசி காதல் முறிந்ததற்கான உண்மையான உள்ளரசியல் காரணம் என்ன?" }
+        ],
+        dares: [
+          { en: "Let the asker look through your recent photo gallery for 20 seconds without hiding your phone.", ta: "உங்கள் போன் கேலரியை அடுத்த 20 நொடிகள் கேள்விகேட்பவர் பார்க்க அனுமதியுங்கள்." },
+          { en: "Let the person to your right compose and post any emoji status to your WhatsApp story.", ta: "உங்கள் வாட்ஸ்அப் ஸ்டேட்டஸில் உங்கள் வலப்பக்கம் உள்ளவர் ஒரு எமோஜி போட அனுமதியுங்கள்." },
+          { en: "Whisper your deepest harmless secret into the target player's ear right now.", ta: "இலக்கு வீரரின் காதில் யாருக்கும் தெரியாத உங்கள் ஒரு ரகசியத்தை கிசுகிசுக்கவும்." },
+          { en: "Swap your shirt, jacket, or watch with another player for the next 2 full rounds.", ta: "அடுத்த 2 சுற்றுகளுக்கு மற்றொரு வீரருடன் சட்டை, ஜாக்கெட் அல்லது வாட்சை மாற்றிக்கொள்ளுங்கள்." },
+          { en: "Send a voice note to the last person who texted you, singing one line of a romantic song.", ta: "உங்களுக்கு கடைசியாக மெசேஜ் அனுப்பியவருக்கு ஒரு காதல் பாடலின் வரியை வாய்ஸ் நோட்டாக பாடி அனுப்புங்கள்." },
+          { en: "Eat a spoonful of spicy hot sauce or a raw chili without drinking water for 30 seconds.", ta: "காரமான சாஸ் அல்லது பச்சை மிளகாயை சாப்பிட்டு 30 நொடிகள் தண்ணீர் குடிக்காமல் இருங்கள்." },
+          { en: "Let the group inspect the last 5 sent text messages in your chat inbox.", ta: "உங்கள் போனில் கடைசியாக அனுப்பிய 5 மெசேஜ்களை அனைவரும் பார்க்க அனுமதியுங்கள்." },
+          { en: "Slow dance with an empty chair or broom to romantic music for 40 seconds.", ta: "ஒரு துடைப்பம் அல்லது நாற்காலியுடன் காதல் பாட்டிற்கு 40 நொடிகள் ரொமாண்டிக் டான்ஸ் ஆடுங்கள்." },
+          { en: "Post an unflattering close-up selfie to your Instagram story with the caption 'Living my best life'.", ta: "ஒரு மோசமான செல்ஃபி எடுத்து இன்ஸ்டா ஸ்டோரியில் 'Living my best life' என பதிவிடுங்கள்." },
+          { en: "Let another player read the titles of the last 5 videos in your YouTube watch history out loud.", ta: "உங்கள் யூடியூப் ஹிஸ்டரியில் உள்ள கடைசி 5 வீடியோக்களின் தலைப்புகளை உரக்கப் படியுங்கள்." },
+          { en: "Drink a mystery mocktail mixed by the asker (must use safe edible kitchen ingredients).", ta: "கேள்வி கேட்பவர் கலந்து தரும் விசித்திரமான பானத்தை (Safe ingredients) குடியுங்கள்." },
+          { en: "Re-enact an intense, dramatic romantic breakup scene with the player to your left.", ta: "உங்கள் இடப்பக்கம் இருப்பவருடன் ஒரு தீவிரமான காதல் பிரேக்-அப் காட்சியை நடித்துக் காட்டுங்கள்." },
+          { en: "Wear a blindfold and try to guess 2 different players purely by touching their hands.", ta: "கண்களைக் கட்டிக்கொண்டு கைகளைத் தொட்டு மட்டுமே 2 நபர்களை சரியாகக் கண்டுபிடியுங்கள்." },
+          { en: "Send a screenshot of your screen time report to the group chat.", ta: "உங்கள் போன் ஸ்கிரீன் டைம் (Screen Time) ரிப்போர்ட்டை ஸ்கிரீன்ஷாட் எடுத்து காட்டுங்கள்." },
+          { en: "Give a 1-minute genuine, heartfelt compliment to the person in the room you talk to the least.", ta: "இந்த அறையில் நீங்கள் மிகக் குறைவாக பேசும் நபருக்கு 1 நிமிடம் உண்மையான பாராட்டு தெரிவியுங்கள்." },
+          { en: "Trade phones with the person across from you and hold each other's phones until this turn ends.", ta: "எதிரில் இருப்பவருடன் போன்களை மாற்றிக்கொண்டு அடுத்த சுற்று வரை கையில் வைத்திருங்கள்." },
+          { en: "Bite into a slice of raw onion like you are casually enjoying an apple.", ta: "பச்சை வெங்காயத்தை ஆப்பிள் போல சாதாரணமாக கடித்து மென்று காட்டுங்கள்." },
+          { en: "Get down on one knee and dramatically serenade the target player with full cinematic passion.", ta: "முட்டி போட்டு சினிமா ஹீரோ/ஹீரோயின் போல மற்றொரு வீரருக்கு காதல் பாட்டு பாடுங்கள்." },
+          { en: "Let the group give you a funny nickname that you must answer to for the rest of the night.", ta: "நண்பர்கள் வைக்கும் கிண்டலான பெயரை இந்த இரவு முழுவதும் நீங்கள் ஏற்றுக்கொள்ள வேண்டும்." },
+          { en: "Do a continuous fitness plank while answering 3 rapid-fire personal questions from the group.", ta: "பிளாங்க் (Plank) செய்துகொண்டே கேட்கப்படும் 3 விரைவான கேள்விகளுக்கு உண்மையைப் பேசுங்கள்." },
+          { en: "Confess the exact white lie you told today to anyone in this room.", ta: "இன்று நீங்கள் இங்குள்ள யாரிடமாவது சொன்ன பொய் என்னவென்று மனம் திறந்து சொல்லுங்கள்." },
+          { en: "Let someone in the room send an innocent greeting emoji to your supervisor or manager.", ta: "உங்கள் மேனேஜர் அல்லது ஆசிரியருக்கு 'Hi 👋' எமோஜி அனுப்ப ஒருவரை அனுமதியுங்கள்." },
+          { en: "Scroll to the very bottom of your Instagram saved posts and show the first 3 to everyone.", ta: "உங்கள் இன்ஸ்டாகிராமில் சேமிக்கப்பட்ட (Saved) பழைய போஸ்ட்டுகளில் மூன்றை காட்டுங்கள்." },
+          { en: "Attempt 20 pushups; every time you pause, you must compliment the asker.", ta: "20 புஷ்-அப்ஸ் எடுக்கவும்; நடுவில் நின்றால் கேள்வி கேட்பவரை பாராட்ட வேண்டும்." },
+          { en: "Let another player style your clothes in the most ridiculous mismatch combination possible.", ta: "உங்கள் ஆடைகளை முற்றிலும் பொருந்தாத கோமாளி ஸ்டைலில் மாற்ற மற்றவரை அனுமதியுங்கள்." },
+          { en: "Send a voice note to your best friend howling like a wild wolf with no explanation.", ta: "உங்கள் நண்பருக்கு ஓநாய் போல ஊளையிட்டு வாய்ஸ் மெசேஜ் அனுப்புங்கள்." },
+          { en: "Imitate your favorite celebrity crying during an award acceptance speech.", ta: "விருது வாங்கும் போது அழும் பிரபல நடிகர்/நடிகை போல மிமிக்ரி செய்யுங்கள்." },
+          { en: "Show the last 3 photos you deleted from your 'Recently Deleted' album.", ta: "சமீபத்தில் டெலிட் செய்த போட்டோக்கள் ஆல்பத்தில் உள்ள கடைசி 3 படங்களை காட்டுங்கள்." },
+          { en: "Let the target player draw a smiley face on your forehead with a washable pen.", ta: "உங்கள் நெற்றியில் ஒரு ஸ்மைலி வரைய மற்றொரு வீரரை அனுமதியுங்கள்." },
+          { en: "Stare intensely into the eyes of the person opposite you for 45 seconds without laughing.", ta: "எதிரில் இருப்பவரின் கண்களை 45 விநாடிகள் சிரிக்காமல் உற்றுப் பாருங்கள்." },
+          { en: "Allow the asker to send one harmless sticker to any random contact on your phone.", ta: "உங்கள் போன் தொடர்பில் உள்ள ஒருவருக்கு ஒரு ஸ்டிக்கர் அனுப்ப அனுமதியுங்கள்." },
+          { en: "Act like a runway supermodel who just tripped and fell, but play it off coolly.", ta: "ரேம்ப் வாக் செல்லும்போது கீழே விழுந்துவிட்டு கூலாக சமாளிக்கும் மாடல் போல நடியுங்கள்." },
+          { en: "Eat a cracker or biscuit in under 20 seconds and then try to whistle immediately.", ta: "20 வினாடிகளில் பிஸ்கட்டை தின்றுவிட்டு உடனே விசிலடிக்க முயற்சி செய்யுங்கள்." },
+          { en: "Reveal the contact name you have saved for your parents or significant other.", ta: "உங்கள் போனில் பெற்றோர் அல்லது காதலரின் பெயரை என்னவென்று சேமித்து வைத்துள்ளீர்கள்?" },
+          { en: "Perform a dramatic death scene worthy of an Oscar award right in the middle of the room.", ta: "ஆஸ்கார் விருது பெறும் அளவுக்கு அறையின் நடுவில் நாடகத்தனமாக 'இறப்பது' போல நடியுங்கள்." },
+          { en: "Let someone scroll through your blocked list on WhatsApp or Instagram.", ta: "உங்கள் வாட்ஸ்அப் அல்லது இன்ஸ்டாவில் நீங்கள் பிளாக் செய்தவர்களின் பட்டியலைக் காட்டுங்கள்." },
+          { en: "Speak in a high-pitched chipmunk squeak until your next turn arrives.", ta: "அடுத்த சுற்று வரும் வரை கார்ட்டூன் சிப்மங்க் போல கீச்சுக்குரலில் பேசுங்கள்." },
+          { en: "Hold hands with the player to your right for the next 2 complete minutes.", ta: "அடுத்த 2 முழு நிமிடங்களுக்கு உங்கள் வலப்பக்கம் உள்ளவரின் கையை பிடித்துக் கொள்ளுங்கள்." },
+          { en: "Do your best belly dance or hip shake routine for 30 seconds.", ta: "30 வினாடிகளுக்கு பெல்லி டான்ஸ் அல்லது ஹிப் ஷேக் நடனம் செய்து காட்டுங்கள்." },
+          { en: "Let the asker tweet or post the word 'Pineapple' on your social media account.", ta: "உங்கள் சமூக வலைத்தளத்தில் 'Pineapple' என்று ஒரு ஒற்றை வார்த்தையை பதிவிடுங்கள்." },
+          { en: "Wear socks on your hands like gloves until the next round starts.", ta: "அடுத்த சுற்று தொடங்கும் வரை காலுறைகளை (Socks) கைகளில் மாட்டிக்கொள்ளுங்கள்." },
+          { en: "Call a restaurant or shop and ask if they sell unicorn food or dragon fuel with a straight voice.", ta: "ஒரு கடைக்கு போன் செய்து சிரிப்பை அடக்கிக்கொண்டு 'டிராகன் உணவு இருக்கா?' என்று கேளுங்கள்." },
+          { en: "Do a 30-second passionate ramp walk while balancing a book on your head.", ta: "தலையில் புத்தகத்தை வைத்துக்கொண்டு கீழே விழாமல் 30 விநாடிகள் கேட்வாக் செய்யுங்கள்." },
+          { en: "Allow another player to look through your Spotify or music streaming search history.", ta: "உங்கள் மியூசிக் ஆப்பில் தேடிய பாடல்களின் ஹிஸ்டரியை மற்றவர்கள் பார்க்க அனுமதியுங்கள்." },
+          { en: "Pretend you are auditioning for a Tamil cinema villain role and deliver an aggressive dialogue.", ta: "சினிமா வில்லன் கதாபாத்திரத்திற்கு ஆடிஷன் கொடுப்பது போல மிரட்டலாக வசனம் பேசுங்கள்." },
+          { en: "Put an ice cube in your hand and hold it tight until it completely melts.", ta: "ஒரு ஐஸ் கட்டியை கையில் வைத்து அது உருகும் வரை இறுகப் பிடித்துக் கொள்ளுங்கள்." },
+          { en: "Let the group choose an emoji that you must post as a comment on the very first post on your feed.", ta: "உங்கள் ஃபீடில் வரும் முதல் போஸ்ட்டில் நண்பர்கள் சொல்லும் எமோஜியை கமெண்ட் செய்யுங்கள்." },
+          { en: "Do your worst, most cringe pickup line on the asker with total seriousness.", ta: "கேள்வி கேட்டவரிடம் ஒரு மொக்கையான காதல் வசனத்தை மிக சீரியஸாக பேசி காட்டுங்கள்." },
+          { en: "Wear your sunglasses upside down and pretend you are an undercover spy for 2 minutes.", ta: "கூலிங்கிளாசை தலைகீழாக மாட்டிக்கொண்டு ரகசிய உளவாளி போல 2 நிமிடம் உலாவுங்கள்." },
+          { en: "Allow the person on your left to tickle your foot or ribs for 10 seconds without pulling away.", ta: "10 விநாடிகளுக்கு உங்கள் காலில் அல்லது விலாவில் கிச்சுகிச்சு மூட்ட அனுமதியுங்கள்." }
+        ]
+      }
+    };
+
+    // --- NON-REPEATING SHUFFLE DECK ENGINE ---
+    // Tracks active decks so cards are never repeated until the 50-card set is fully exhausted
+    const DeckManager = {
+      decks: {
+        party: { truths: [], dares: [] },
+        wild: { truths: [], dares: [] }
+      },
+      // Fisher-Yates array shuffle
+      shuffle(array) {
+        const copy = [...array];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      },
+      initDeck(mode, type) {
+        const rawList = PROMPT_DATABASE[mode][type];
+        this.decks[mode][type] = this.shuffle(rawList);
+      },
+      drawCard(mode, type) {
+        // If deck is empty or uninitialized, replenish and shuffle all 50 items
+        if (!this.decks[mode][type] || this.decks[mode][type].length === 0) {
+          this.initDeck(mode, type);
+          showToast(`Reshuffled fresh deck of 50 ${type.toUpperCase()}S!`, 'fa-shuffle');
+        }
+
+        const remaining = this.decks[mode][type].length;
+        const total = PROMPT_DATABASE[mode][type].length; // 50
+        const cardIndex = total - remaining + 1;
+
+        const card = this.decks[mode][type].pop();
+        return {
+          card,
+          counterText: `Card ${cardIndex}/${total} in Deck`
+        };
+      }
+    };
+
+    // --- APPLICATION STATE ---
+    let players = [
+      { id: '1', name: 'Alex', gender: 'male', score: 0 },
+      { id: '2', name: 'Priya', gender: 'female', score: 0 },
+      { id: '3', name: 'Karthik', gender: 'male', score: 0 },
+      { id: '4', name: 'Divya', gender: 'female', score: 0 }
+    ];
+    let selectedAddGender = 'male'; // 'male' or 'female'
+    let currentMatchRule = 'any'; // 'any', 'opposite', 'same'
+    let currentMode = 'party'; // 'party' or 'wild'
+    let currentTurn = null; // { asker, target, type: 'truth'|'dare', promptEn, promptTa }
+    let customPromptQueue = null; // { type, promptEn, promptTa }
+    let totalRoundsPlayed = 0;
+    let isSoundEnabled = true;
+
+    // --- AUDIO SYNTHESIS ENGINE (Web Audio API) ---
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      },
+      playTone(freq, type = 'sine', duration = 0.15, vol = 0.1) {
+        if (!isSoundEnabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn('Audio error:', e);
+        }
+      },
+      playTapDrum() {
+        this.playTone(180, 'triangle', 0.2, 0.2);
+        setTimeout(() => this.playTone(520, 'sine', 0.15, 0.15), 50);
+        setTimeout(() => this.playTone(780, 'sine', 0.25, 0.2), 110);
+      },
+      playSuccess() {
+        this.playTone(523.25, 'triangle', 0.15, 0.15);
+        setTimeout(() => this.playTone(659.25, 'triangle', 0.15, 0.15), 100);
+        setTimeout(() => this.playTone(783.99, 'triangle', 0.3, 0.2), 200);
+      },
+      playChicken() {
+        this.playTone(340, 'sawtooth', 0.15, 0.15);
+        setTimeout(() => this.playTone(280, 'sawtooth', 0.18, 0.12), 120);
+        setTimeout(() => this.playTone(180, 'sawtooth', 0.25, 0.15), 240);
+      }
+    };
+
+    // --- DOM REFERENCES ---
+    const addPlayerForm = document.getElementById('addPlayerForm');
+    const playerNameInput = document.getElementById('playerNameInput');
+    const playerChipsContainer = document.getElementById('playerChipsContainer');
+    const playerCounter = document.getElementById('playerCounter');
+    const minPlayerNotice = document.getElementById('minPlayerNotice');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+
+    const genderMaleBtn = document.getElementById('genderMaleBtn');
+    const genderFemaleBtn = document.getElementById('genderFemaleBtn');
+
+    const matchAnyBtn = document.getElementById('matchAnyBtn');
+    const matchOppositeBtn = document.getElementById('matchOppositeBtn');
+    const matchSameBtn = document.getElementById('matchSameBtn');
+
+    const modePartyBtn = document.getElementById('modePartyBtn');
+    const modeWildBtn = document.getElementById('modeWildBtn');
+
+    const mainTapBtn = document.getElementById('mainTapBtn');
+    const idleStateContainer = document.getElementById('idleStateContainer');
+    const resultStateContainer = document.getElementById('resultStateContainer');
+
+    const actionBadge = document.getElementById('actionBadge');
+    const playerAName = document.getElementById('playerAName');
+    const playerBName = document.getElementById('playerBName');
+    const playerAGenderBadge = document.getElementById('playerAGenderBadge');
+    const playerBGenderBadge = document.getElementById('playerBGenderBadge');
+    const actionConnectorText = document.getElementById('actionConnectorText');
+    const promptText = document.getElementById('promptText');
+    const promptTextTamil = document.getElementById('promptTextTamil');
+    const deckCounterBadge = document.getElementById('deckCounterBadge');
+    const targetNameSummary = document.getElementById('targetNameSummary');
+
+    const completeBtn = document.getElementById('completeBtn');
+    const passBtn = document.getElementById('passBtn');
+    const nextTurnBtn = document.getElementById('nextTurnBtn');
+
+    const activityLog = document.getElementById('activityLog');
+    const roundsCounter = document.getElementById('roundsCounter');
+
+    const scoreboardModalBtn = document.getElementById('scoreboardModalBtn');
+    const scoresModal = document.getElementById('scoresModal');
+    const closeScoresBtn = document.getElementById('closeScoresBtn');
+    const closeScoresBtn2 = document.getElementById('closeScoresBtn2');
+    const scoresList = document.getElementById('scoresList');
+
+    const customPromptModalBtn = document.getElementById('customPromptModalBtn');
+    const customPromptModal = document.getElementById('customPromptModal');
+    const closeCustomPromptBtn = document.getElementById('closeCustomPromptBtn');
+    const customPromptForm = document.getElementById('customPromptForm');
+    const customPromptInput = document.getElementById('customPromptInput');
+
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIcon = document.getElementById('soundIcon');
+    const toastNotification = document.getElementById('toastNotification');
+    const toastMsg = document.getElementById('toastMsg');
+    const toastIcon = document.getElementById('toastIcon');
+
+    // --- TOAST NOTIFICATION HELPER ---
+    let toastTimeout;
+    function showToast(message, icon = 'fa-bell', isError = false) {
+      clearTimeout(toastTimeout);
+      toastMsg.innerText = message;
+      toastIcon.className = `fa-solid ${icon} ${isError ? 'text-rose-400' : 'text-cyan-400'}`;
+      
+      toastNotification.classList.remove('opacity-0', 'translate-y-8');
+      toastNotification.classList.add('opacity-100', 'translate-y-0');
+
+      toastTimeout = setTimeout(() => {
+        toastNotification.classList.remove('opacity-100', 'translate-y-0');
+        toastNotification.classList.add('opacity-0', 'translate-y-8');
+      }, 3000);
+    }
+
+    // --- GENDER & FILTER TOGGLE CONTROLS ---
+    function setGenderSelection(gender) {
+      selectedAddGender = gender;
+      if (gender === 'male') {
+        genderMaleBtn.className = 'px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-sm';
+        genderFemaleBtn.className = 'px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-pink-300 border border-transparent';
+      } else {
+        genderFemaleBtn.className = 'px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-pink-500/20 text-pink-300 border border-pink-400/50 shadow-sm';
+        genderMaleBtn.className = 'px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-cyan-300 border border-transparent';
+      }
+    }
+
+    genderMaleBtn.addEventListener('click', () => setGenderSelection('male'));
+    genderFemaleBtn.addEventListener('click', () => setGenderSelection('female'));
+
+    function setMatchRule(rule) {
+      currentMatchRule = rule;
+      [matchAnyBtn, matchOppositeBtn, matchSameBtn].forEach(b => {
+        b.className = 'px-2.5 py-1 rounded-lg font-semibold text-[11px] text-slate-400 hover:text-white';
+      });
+      if (rule === 'any') matchAnyBtn.className = 'px-2.5 py-1 rounded-lg font-semibold text-[11px] bg-purple-600 text-white';
+      else if (rule === 'opposite') matchOppositeBtn.className = 'px-2.5 py-1 rounded-lg font-semibold text-[11px] bg-purple-600 text-white';
+      else if (rule === 'same') matchSameBtn.className = 'px-2.5 py-1 rounded-lg font-semibold text-[11px] bg-purple-600 text-white';
+    }
+
+    matchAnyBtn.addEventListener('click', () => setMatchRule('any'));
+    matchOppositeBtn.addEventListener('click', () => setMatchRule('opposite'));
+    matchSameBtn.addEventListener('click', () => setMatchRule('same'));
+
+    // --- PLAYER MANAGEMENT ---
+    function renderPlayerChips() {
+      playerChipsContainer.innerHTML = '';
+      
+      const maleCount = players.filter(p => p.gender === 'male').length;
+      const femaleCount = players.filter(p => p.gender === 'female').length;
+      playerCounter.innerText = `${players.length} Added (${maleCount}👦 ${femaleCount}👧)`;
+
+      if (players.length >= 2) {
+        minPlayerNotice.classList.add('hidden');
+        clearAllBtn.classList.remove('hidden');
+      } else {
+        minPlayerNotice.classList.remove('hidden');
+        if (players.length === 0) clearAllBtn.classList.add('hidden');
+        else clearAllBtn.classList.remove('hidden');
+      }
+
+      players.forEach((player) => {
+        const isMale = player.gender === 'male';
+        const chip = document.createElement('div');
+        chip.className = `flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full bg-slate-900/90 border ${isMale ? 'border-cyan-500/30' : 'border-pink-500/30'} text-xs font-semibold text-slate-200 transition duration-200 shadow-sm animate-pop`;
+        
+        chip.innerHTML = `
+          <span class="flex items-center gap-1.5">
+            <span class="text-sm">${isMale ? '👦' : '👧'}</span>
+            <span class="max-w-[110px] truncate ${isMale ? 'text-cyan-200' : 'text-pink-200'}">${escapeHTML(player.name)}</span>
+          </span>
+          <span class="text-[10px] text-amber-400 bg-amber-400/10 px-1.5 py-0.2 rounded font-bold">${player.score}p</span>
+          <button type="button" data-id="${player.id}" class="remove-btn w-5 h-5 flex items-center justify-center rounded-full hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition" title="Remove Player">
+            <i class="fa-solid fa-xmark text-[10px]"></i>
+          </button>
+        `;
+        playerChipsContainer.appendChild(chip);
+      });
+
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          removePlayer(id);
+        });
+      });
+    }
+
+    function addPlayer(name) {
+      const trimmed = name.trim();
+      if (!trimmed) {
+        showToast("Please enter a valid player name!", 'fa-circle-exclamation', true);
+        return;
+      }
+      if (players.some(p => p.name.toLowerCase() === trimmed.toLowerCase())) {
+        showToast(`'${trimmed}' is already in the game!`, 'fa-triangle-exclamation', true);
+        return;
+      }
+      if (players.length >= 30) {
+        showToast("Player room limit reached (30 max)!", 'fa-circle-exclamation', true);
+        return;
+      }
+
+      players.push({
+        id: Date.now().toString(),
+        name: trimmed,
+        gender: selectedAddGender,
+        score: 0
+      });
+
+      AudioEngine.playTone(600, 'sine', 0.1, 0.1);
+      renderPlayerChips();
+      playerNameInput.value = '';
+      playerNameInput.focus();
+    }
+
+    function removePlayer(id) {
+      players = players.filter(p => p.id !== id);
+      renderPlayerChips();
+      AudioEngine.playTone(240, 'triangle', 0.1, 0.08);
+    }
+
+    function clearAllPlayers() {
+      if (players.length === 0) return;
+      players = [];
+      renderPlayerChips();
+      idleStateContainer.classList.remove('hidden');
+      resultStateContainer.classList.add('hidden');
+      showToast("Player list cleared.", 'fa-trash-can');
+    }
+
+    // --- PAIR MATCHMAKER LOGIC ---
+    function pickPlayerPair() {
+      if (players.length < 2) return null;
+
+      // Pure Random / Any
+      if (currentMatchRule === 'any') {
+        const shuffled = [...players].sort(() => 0.5 - Math.random());
+        return { asker: shuffled[0], target: shuffled[1] };
+      }
+
+      // Opposite Gender Matchmaking (Male vs Female or Female vs Male)
+      if (currentMatchRule === 'opposite') {
+        const males = players.filter(p => p.gender === 'male');
+        const females = players.filter(p => p.gender === 'female');
+        if (males.length >= 1 && females.length >= 1) {
+          const m = males[Math.floor(Math.random() * males.length)];
+          const f = females[Math.floor(Math.random() * females.length)];
+          return Math.random() > 0.5 ? { asker: m, target: f } : { asker: f, target: m };
+        }
+      }
+
+      // Same Gender Matchmaking (Boy vs Boy or Girl vs Girl)
+      if (currentMatchRule === 'same') {
+        const males = players.filter(p => p.gender === 'male');
+        const females = players.filter(p => p.gender === 'female');
+        const eligibleSets = [];
+        if (males.length >= 2) eligibleSets.push(males);
+        if (females.length >= 2) eligibleSets.push(females);
+
+        if (eligibleSets.length > 0) {
+          const chosenGroup = eligibleSets[Math.floor(Math.random() * eligibleSets.length)];
+          const shuff = [...chosenGroup].sort(() => 0.5 - Math.random());
+          return { asker: shuff[0], target: shuff[1] };
+        }
+      }
+
+      // Fallback if strict criteria cannot be satisfied by current player counts
+      const fallback = [...players].sort(() => 0.5 - Math.random());
+      return { asker: fallback[0], target: fallback[1] };
+    }
+
+    // --- GAME ACTION GENERATOR (TAP BUTTON LOGIC) ---
+    function triggerActionSpin() {
+      if (players.length < 2) {
+        showToast("Add at least 2 players to play!", 'fa-user-group', true);
+        playerNameInput.focus();
+        return;
+      }
+
+      AudioEngine.playTapDrum();
+      if (navigator.vibrate) navigator.vibrate([40, 30, 60]);
+
+      const pair = pickPlayerPair();
+      if (!pair) return;
+
+      let actionType = '';
+      let promptEn = '';
+      let promptTa = '';
+      let deckCounterText = '';
+
+      // Check if custom user prompt was queued
+      if (customPromptQueue) {
+        actionType = customPromptQueue.type;
+        promptEn = customPromptQueue.promptEn;
+        promptTa = customPromptQueue.promptTa || "(Custom player prompt)";
+        deckCounterText = "Custom User Prompt";
+        customPromptQueue = null;
+      } else {
+        // 50% Truth, 50% Dare
+        actionType = Math.random() > 0.5 ? 'truth' : 'dare';
+        const deckType = actionType === 'truth' ? 'truths' : 'dares';
+
+        // Draw from the non-repeating shuffle deck
+        const drawResult = DeckManager.drawCard(currentMode, deckType);
+        promptEn = drawResult.card.en;
+        promptTa = drawResult.card.ta;
+        deckCounterText = drawResult.counterText;
+      }
+
+      currentTurn = {
+        asker: pair.asker,
+        target: pair.target,
+        type: actionType,
+        promptEn,
+        promptTa,
+        deckCounterText
+      };
+
+      displayTurnResult(currentTurn);
+    }
+
+    function displayTurnResult(turn) {
+      idleStateContainer.classList.add('hidden');
+      resultStateContainer.classList.remove('hidden');
+
+      // Names & Gender Badges
+      playerAName.innerText = turn.asker.name;
+      playerBName.innerText = turn.target.name;
+      targetNameSummary.innerText = turn.target.name;
+
+      playerAGenderBadge.innerText = turn.asker.gender === 'male' ? '👦' : '👧';
+      playerBGenderBadge.innerText = turn.target.gender === 'male' ? '👦' : '👧';
+
+      promptText.innerText = turn.promptEn;
+      promptTextTamil.innerText = turn.promptTa;
+      deckCounterBadge.innerText = turn.deckCounterText;
+
+      if (turn.type === 'truth') {
+        actionBadge.className = 'inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs font-black tracking-widest uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-glow-cyan';
+        actionBadge.innerHTML = `<i class="fa-solid fa-eye text-cyan-400"></i> TRUTH QUESTION`;
+        actionConnectorText.innerText = `ASKS A TRUTH TO`;
+        actionConnectorText.className = 'text-cyan-300 font-bold text-xs uppercase px-2 py-1 rounded-full bg-slate-900 border border-cyan-500/30';
+      } else {
+        actionBadge.className = 'inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs font-black tracking-widest uppercase bg-pink-500/20 text-pink-300 border border-pink-400/40 shadow-glow-pink';
+        actionBadge.innerHTML = `<i class="fa-solid fa-bolt text-pink-400"></i> DARE CHALLENGE`;
+        actionConnectorText.innerText = `GIVES A DARE TO`;
+        actionConnectorText.className = 'text-pink-300 font-bold text-xs uppercase px-2 py-1 rounded-full bg-slate-900 border border-pink-500/30';
+      }
+
+      // Re-trigger visual animation
+      resultStateContainer.classList.remove('animate-pop');
+      void resultStateContainer.offsetWidth;
+      resultStateContainer.classList.add('animate-pop');
+    }
+
+    // --- SCORE TRACKING & TURN LOGGING ---
+    function resolveTurn(completed) {
+      if (!currentTurn) return;
+
+      totalRoundsPlayed++;
+      roundsCounter.innerText = `${totalRoundsPlayed} turns played`;
+
+      const targetPlayer = players.find(p => p.id === currentTurn.target.id);
+
+      if (completed) {
+        if (targetPlayer) targetPlayer.score += 1;
+        AudioEngine.playSuccess();
+        showToast(`${currentTurn.target.name} scored +1 point!`, 'fa-circle-check');
+        logActivity(`${currentTurn.asker.name} ➔ ${currentTurn.target.name} completed [${currentTurn.type.toUpperCase()}]`, true);
+      } else {
+        AudioEngine.playChicken();
+        showToast(`${currentTurn.target.name} chickened out! 🐔`, 'fa-egg');
+        logActivity(`${currentTurn.target.name} skipped ${currentTurn.asker.name}'s [${currentTurn.type.toUpperCase()}]`, false);
+      }
+
+      renderPlayerChips();
+      triggerActionSpin();
+    }
+
+    function logActivity(message, success) {
+      const emptyNotice = activityLog.querySelector('.italic');
+      if (emptyNotice) emptyNotice.remove();
+
+      const item = document.createElement('div');
+      item.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800/80 animate-pop';
+      item.innerHTML = `
+        <span class="truncate pr-2">${escapeHTML(message)}</span>
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${success ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+          ${success ? '+1 PT' : 'PASSED'}
+        </span>
+      `;
+      activityLog.prepend(item);
+    }
+
+    // --- LEADERBOARD MODAL ---
+    function openLeaderboard() {
+      scoresList.innerHTML = '';
+      if (players.length === 0) {
+        scoresList.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs italic">No players available yet.</div>`;
+      } else {
+        const sorted = [...players].sort((a, b) => b.score - a.score);
+        sorted.forEach((player, rank) => {
+          const medal = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : `#${rank + 1}`;
+          const isMale = player.gender === 'male';
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between p-3 rounded-2xl bg-slate-900/70 border border-slate-800';
+          row.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="text-base font-black w-6 text-center">${medal}</span>
+              <span class="text-sm">${isMale ? '👦' : '👧'}</span>
+              <span class="font-bold text-sm text-white">${escapeHTML(player.name)}</span>
+            </div>
+            <div class="text-sm font-black text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-xl border border-yellow-400/20">
+              ${player.score} pts
+            </div>
+          `;
+          scoresList.appendChild(row);
+        });
+      }
+      scoresModal.classList.remove('hidden');
+    }
+
+    function closeLeaderboard() {
+      scoresModal.classList.add('hidden');
+    }
+
+    // --- UTILITIES ---
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+
+    // --- EVENT LISTENERS ---
+    addPlayerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      addPlayer(playerNameInput.value);
+    });
+
+    clearAllBtn.addEventListener('click', clearAllPlayers);
+
+    mainTapBtn.addEventListener('click', triggerActionSpin);
+    nextTurnBtn.addEventListener('click', triggerActionSpin);
+
+    completeBtn.addEventListener('click', () => resolveTurn(true));
+    passBtn.addEventListener('click', () => resolveTurn(false));
+
+    // Mode Selector Switch
+    modePartyBtn.addEventListener('click', () => {
+      currentMode = 'party';
+      modePartyBtn.className = 'flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow';
+      modeWildBtn.className = 'flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-2';
+      showToast("Switched to Classic Party deck (50 T + 50 D) 🎉");
+    });
+
+    modeWildBtn.addEventListener('click', () => {
+      currentMode = 'wild';
+      modeWildBtn.className = 'flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow';
+      modePartyBtn.className = 'flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-400 hover:text-white transition flex items-center justify-center gap-2';
+      showToast("Switched to Wild & Spicy deck (50 T + 50 D) 🔥");
+    });
+
+    // Sound toggle
+    soundToggleBtn.addEventListener('click', () => {
+      isSoundEnabled = !isSoundEnabled;
+      if (isSoundEnabled) {
+        soundIcon.className = 'fa-solid fa-volume-high text-cyan-400';
+        showToast("Sound effects enabled 🔊");
+      } else {
+        soundIcon.className = 'fa-solid fa-volume-xmark text-slate-500';
+        showToast("Sound effects muted 🔇");
+      }
+    });
+
+    // Modals
+    scoreboardModalBtn.addEventListener('click', openLeaderboard);
+    closeScoresBtn.addEventListener('click', closeLeaderboard);
+    closeScoresBtn2.addEventListener('click', closeLeaderboard);
+    scoresModal.addEventListener('click', (e) => {
+      if (e.target === scoresModal) closeLeaderboard();
+    });
+
+    customPromptModalBtn.addEventListener('click', () => {
+      customPromptModal.classList.remove('hidden');
+      customPromptInput.focus();
+    });
+    closeCustomPromptBtn.addEventListener('click', () => {
+      customPromptModal.classList.add('hidden');
+    });
+    customPromptModal.addEventListener('click', (e) => {
+      if (e.target === customPromptModal) customPromptModal.classList.add('hidden');
+    });
+
+    customPromptForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const promptVal = customPromptInput.value.trim();
+      if (!promptVal) return;
+
+      const selectedType = document.querySelector('input[name="customType"]:checked').value;
+      customPromptQueue = {
+        type: selectedType,
+        promptEn: promptVal,
+        promptTa: "(Player custom prompt)"
+      };
+
+      customPromptInput.value = '';
+      customPromptModal.classList.add('hidden');
+      showToast("Custom prompt queued for next round!", 'fa-feather-pointed');
+    });
+
+    // Initialize Decks and Render on Load
+    window.onload = function () {
+      DeckManager.initDeck('party', 'truths');
+      DeckManager.initDeck('party', 'dares');
+      DeckManager.initDeck('wild', 'truths');
+      DeckManager.initDeck('wild', 'dares');
+      renderPlayerChips();
+    };
+  </script>
+</body>
+</html>
